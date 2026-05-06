@@ -4,7 +4,7 @@ export default class GameScene extends Scene {
     preload() {
         super.preload()
         this.lia = this.maki.player('lia')
-        manager.map(this, 'default_map')
+        manager.map(this, 'realm_starting_area')
         manager.preload(this)
     }
 
@@ -12,13 +12,22 @@ export default class GameScene extends Scene {
         super.create()
         manager.create(this)
 
+        // Creating the game camera
+        this.cameras.main.setBounds(0, 0, 100*32, 100*32) // Assuming the map is 100x100 tiles of 32px each
+        this.cameras.main.startFollow(this.lia.sprite)
+
         // Place lia in the center of the map (50×50 tiles × 16px = 800×800)
-        this.lia.sprite.setPosition(400, 400)
+        this.lia.sprite.setPosition(391, 975)
 
         this.physics.add.collider(this.lia.sprite, manager.getWallGroup(this, 'default_map'))
     }
 
     update() {
         this.maki.move(this.lia)
+
+        // Debug get the player position when pressing T
+        this.input.keyboard.on('keydown-T', () => {
+            console.log(`Player position: x=${this.lia.sprite.x}, y=${this.lia.sprite.y}`)
+        })
     }
 }
