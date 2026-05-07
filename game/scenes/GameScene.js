@@ -1,4 +1,6 @@
 import { Scene, manager } from '@tialops/maki'
+import BaseNPC from '../entities/npc/base_npc'
+import InteractionSystem from '../system/interaction/interaction_system'
 
 export default class GameScene extends Scene {
     preload() {
@@ -20,9 +22,23 @@ export default class GameScene extends Scene {
         this.lia.sprite.setPosition(391, 975)
 
         this.physics.add.collider(this.lia.sprite, manager.getWallGroup(this, 'default_map'))
+
+        // Creating the interaction system
+        this.interactionSystem = new InteractionSystem(this, this.lia.sprite);
+
+        // Creating the npc group
+        this.npcs = this.physics.add.group()
+
+        var npc = new BaseNPC(this, 'lia', 'npc_1');
+        npc.setPosition(655, 1025);
+        npc.setSize(32, 64);
+        npc.create();
+
+        this.npcs.add(npc);
     }
 
     update() {
+        this.interactionSystem.update()
         this.maki.move(this.lia)
 
         // Debug get the player position when pressing T

@@ -4,5 +4,5 @@ export default {
   height: 600,  // game canvas height in px — editor canvas matches this
   maps: ['realm_starting_area'],  // list of map names to load (without .json extension)
   sprites: ['lia'],
-  debug: false
+  debug: true
 }
