@@ -1,12 +1,14 @@
 import Interactable from "../../system/interaction/interactable";
+import StorySystem from "../../system/story/story_system";
 import Entity from "../entity";
 
 export default class BaseNPC extends Entity {
-    constructor(scene, name, id) {
+    constructor(scene, name, id, storySystem) {
         super(scene, name);
         
         this.id = id;
         this.interactable = null;
+        this.storySystem = storySystem;
 
         this.create();
 
@@ -21,11 +23,13 @@ export default class BaseNPC extends Entity {
         interactionText.visible = false;
 
         this.interactable = new Interactable(this.scene, this.name, () => {
-            console.log(`Interacted with NPC ${this.name}`);
+            this.storySystem.storyEventEmitter.emit(StorySystem.EVENTS.SHOW_DIALOG,  this.storySystem.getNextDialog(this.id) );
         }, () => {
             interactionText.visible = true;
         }, () => {
             interactionText.visible = false;
+
+            this.storySystem.storyEventEmitter.emit(StorySystem.EVENTS.HIDE_DIALOG);
         });
     }
 
