@@ -8,6 +8,8 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite{
         this.scene.physics.add.existing(this);
     }
 
+    create() {}
+
     update() {}
 
     onCollideWithBody(body) {}

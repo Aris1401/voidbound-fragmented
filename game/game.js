@@ -11,7 +11,7 @@ new Phaser.Game({
     mode: Phaser.Scale.RESIZE,
     physics: {
         default: 'arcade',
-        arcade: { debug: false }
+        arcade: { debug: true }
     },
     scene: [MainMenuScene]
 })

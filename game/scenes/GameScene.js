@@ -5,6 +5,8 @@ import DialogUI from './HUD/dialog_ui'
 import MainDialogDB from '../data/dialog/main_dialog_db'
 import StoryState from '../system/story/story_state'
 import StorySystem from '../system/story/story_system'
+import DialogFactory from '../system/story/dialog/dialog_factory'
+import BaseEnemy from '../entities/enemy/base_enemy'
 
 export default class GameScene extends Scene {
     preload() {
@@ -35,6 +37,15 @@ export default class GameScene extends Scene {
         // Creating the interaction system
         this.interactionSystem = new InteractionSystem(this, this.lia.sprite);
 
+        this.createNPCs();
+        this.createEnemies();
+
+        // Launching the dialog UI
+        this.scene.add('dialog_ui', DialogUI, false);
+        this.scene.launch('dialog_ui', { storySystem: this.storySystem });
+    }
+
+    createNPCs() {
         // Creating the npc group
         this.npcs = this.physics.add.group()
 
@@ -44,10 +55,20 @@ export default class GameScene extends Scene {
         npc.create();
         
         this.npcs.add(npc);
+    }
 
-        // Launching the dialog UI
-        this.scene.add('dialog_ui', DialogUI, false);
-        this.scene.launch('dialog_ui', { storySystem: this.storySystem });
+    createEnemies() {
+        this.enemies = this.physics.add.group();
+
+        var enemy = new BaseEnemy(this, "lia");
+        enemy.setPosition(961, 983)
+        enemy.create()
+
+        this.enemies.add(enemy);
+
+        this.physics.add.overlap(this.lia.sprite, this.enemies, function (player, enemy) {
+            enemy.onOverlapWithBody(player)
+        })
     }
 
     update() {
@@ -56,7 +77,7 @@ export default class GameScene extends Scene {
 
         // Debug get the player position when pressing T
         this.input.keyboard.on('keydown-T', () => {
-            console.log(`Player position: x=${this.lia.sprite.x}, y=${this.lia.sprite.y}`)
+            this.storySystem.storyEventEmitter.emit(StorySystem.EVENTS.SHOW_DIALOG, DialogFactory.createDialog("-1", -1, -1, `Player position: x=${this.lia.sprite.x}, y=${this.lia.sprite.y}`));
         })
     }
 }
