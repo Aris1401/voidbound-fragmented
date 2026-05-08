@@ -7,6 +7,7 @@ import StoryState from '../system/story/story_state'
 import StorySystem from '../system/story/story_system'
 import DialogFactory from '../system/story/dialog/dialog_factory'
 import BaseEnemy from '../entities/enemy/base_enemy'
+import CombatScene from './CombatScene'
 
 export default class GameScene extends Scene {
     preload() {
@@ -42,6 +43,7 @@ export default class GameScene extends Scene {
 
         // Launching the dialog UI
         this.scene.add('dialog_ui', DialogUI, false);
+        this.scene.add('combat', CombatScene)
         this.scene.launch('dialog_ui', { storySystem: this.storySystem });
     }
 
