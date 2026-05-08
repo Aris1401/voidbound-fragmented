@@ -8,6 +8,8 @@ import StorySystem from '../system/story/story_system'
 import DialogFactory from '../system/story/dialog/dialog_factory'
 import BaseEnemy from '../entities/enemy/base_enemy'
 import CombatScene from './CombatScene'
+import PlayerStats from '../system/player/player_stats'
+import CombatSystem from '../system/combat/combat_system'
 
 export default class GameScene extends Scene {
     preload() {
@@ -30,6 +32,13 @@ export default class GameScene extends Scene {
         this.cameras.main.setBounds(0, 0, 100*32, 100*32) // Assuming the map is 100x100 tiles of 32px each
         this.cameras.main.startFollow(this.lia.sprite)
         
+        // Creating the player stats
+        this.playerStats = new PlayerStats();
+
+        // Creation of the combat system
+        this.combatSystem = new CombatSystem();
+        this.combatSystem.setPlayerStats(this.playerStats)
+
         // Place lia in the center of the map (50×50 tiles × 16px = 800×800)
         this.lia.sprite.setPosition(391, 975)
 
@@ -62,7 +71,7 @@ export default class GameScene extends Scene {
     createEnemies() {
         this.enemies = this.physics.add.group();
 
-        var enemy = new BaseEnemy(this, "lia");
+        var enemy = new BaseEnemy(this, "lia", this.combatSystem);
         enemy.setPosition(961, 983)
         enemy.create()
 

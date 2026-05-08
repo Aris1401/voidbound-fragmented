@@ -12,6 +12,8 @@ export default class CombatState {
         enemyInstance.enemyModel = enemyModel;
 
         enemyInstance.initializeStats()
+
+        return enemyInstance
     }
 
     addEnemy(enemyInstance) {

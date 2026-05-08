@@ -1,13 +1,15 @@
 import CombatState from "./combat_state";
 
 export default class CombatEncounter {
-    constructor(scene, enemyNumber, encounterModel) {
+    constructor(scene, enemyNumber, encounterModel, combatSystem) {
         this.scene = scene;
 
         this.enemyNumber = enemyNumber;
         this.encounterModel = encounterModel;
+        this.combatSystem = combatSystem;
 
         this.combatState = new CombatState();
+        this.combatSystem.setCombatState(this.combatState);
 
         this.createEnemies()
     }
@@ -22,6 +24,6 @@ export default class CombatEncounter {
     }
 
     startCombat() {
-        this.scene.scene.switch('combat');
+        this.scene.scene.switch('combat', { combatState: this.combatState, combatSystem: this.combatSystem });
     }
 }

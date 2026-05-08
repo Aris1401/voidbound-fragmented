@@ -3,11 +3,12 @@ import CombatEncounter from "../../system/combat/combat_encounter";
 import Entity from "../entity";
 
 export default class BaseEnemy extends Entity {
-    constructor(scene, name) {
+    constructor(scene, name, combatSystem) {
         super(scene, name);
 
         this.playerOverlapped = false;
 
+        this.combatSystem = combatSystem;
         this.encounterModel = new BaseSlimeEncounterModel();
     }
 
@@ -17,7 +18,7 @@ export default class BaseEnemy extends Entity {
         this.playerOverlapped = true;
 
         // Creating the combat encounter
-        let combatEncounter = new CombatEncounter(this.scene, 3, this.encounterModel)
+        let combatEncounter = new CombatEncounter(this.scene, 3, this.encounterModel, this.combatSystem)
         combatEncounter.startCombat()
     }
 }
