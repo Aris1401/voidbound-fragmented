@@ -1,3 +1,5 @@
+import CombatSystem from "../combat_system";
+
 export default class CardModel {
     static TargetType = {
         SELF: "self",
@@ -21,7 +23,9 @@ export default class CardModel {
 
     getDescription() { return ""; }
 
-    canPlay() {
+    canPlay(combatSystem = null) {
+        if (combatSystem.currentTurnSide != CombatSystem.Side.PLAYERS) return false;
+
         let result = this.playerStats.playerCombatState.energy - this.energyCost
 
         return result > 0

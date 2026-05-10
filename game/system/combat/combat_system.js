@@ -1,14 +1,24 @@
 import CombatState from "./combat_state";
 
 export default class CombatSystem {
+    static Side = {
+        PLAYERS: 0,
+        ENEMYS: 1
+    }
+
     static Events = {
         ENEMIES_CHANGED: "enemies_changed",
-        COMBAT_WON: "combat_won"
+        COMBAT_WON: "combat_won",
+        TURN_ENDED: "turn_ended",
+        TURN_STARTED: "turn_started",
+        PLAYER_TURN_ENDED: "player_turn_ended"
     }
 
     constructor() {
         this.playerStats = null;
         this.combatState = null; 
+
+        this.currentTurnSide = CombatSystem.Side.PLAYERS
 
         this.events = new Phaser.Events.EventEmitter();
     }
@@ -37,7 +47,28 @@ export default class CombatSystem {
 
     startCombat() {
         // TODO: Start the turn system
-        this.setupPlayerTurn()
+        this.startTurn()
+    }
+
+    startTurn() {
+        if (this.currentTurnSide == CombatSystem.Side.PLAYERS) {
+            this.setupPlayerTurn()
+        } else {
+            // The enemy's turns
+            console.log("Enemy's turn")
+        }
+
+        this.events.emit(CombatSystem.Events.TURN_STARTED, this.combatState)
+    }
+
+    switchTurn() {
+        if (this.currentTurnSide == CombatSystem.Side.PLAYERS) {
+            this.currentTurnSide = CombatSystem.Side.ENEMYS
+        } else {
+            this.currentTurnSide = CombatSystem.Side.PLAYERS
+        }
+
+        this.events.emit(CombatSystem.Events.TURN_ENDED, this.combatState)
     }
     
     setupPlayerTurn() {
@@ -57,5 +88,15 @@ export default class CombatSystem {
             }
         }
 
+    }
+
+    endPlayerTurn() {
+        if (this.currentTurnSide != CombatSystem.Side.PLAYERS) return;
+
+        this.switchTurn()
+        
+        this.events.emit(CombatSystem.Events.PLAYER_TURN_ENDED, this.combatState)
+
+        this.startTurn()
     }
 }

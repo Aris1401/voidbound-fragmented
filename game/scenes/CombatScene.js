@@ -28,6 +28,8 @@ export default class CombatScene extends Scene {
         // Loading combat ui
         this.load.image('draw_pile', 'combat/draw_pile.png')
         this.load.image('energy', 'combat/energy.png')
+        this.load.image('end_turn', 'combat/end_turn.png')
+
         this.load.image('enemy_selector', 'combat/enemy_selector.png')
 
         // Card ui
@@ -191,6 +193,63 @@ export default class CombatScene extends Scene {
 
         this.combatSystem.playerStats.playerCombatState.events.on(PlayerCombatState.Events.ENERGY_CHANGED, (currentEnergy, maxEnergy) => {
             this.enemiesContainerText.setText(currentEnergy)
+        })
+
+        // End turn
+        this.createEndTurnButton()
+    }
+
+    createEndTurnButton() {
+        this.endTurnButton = this.add.container(this.sys.canvas.width - 100, this.drawPileButton.y)
+        let endTurnImage = this.add.image(0, 0, 'end_turn').setDepth(20)
+        this.endTurnButton.add(endTurnImage)
+        this.endTurnButton.add(this.add.text(0, 0, 'End turn').setDepth(21).setOrigin(.5))
+
+        this.endTurnButton.setSize(endTurnImage.getBounds().width, endTurnImage.getBounds().height)
+
+        this.endTurnButton.setInteractive()
+
+        this.endTurnButton.on('pointerdown', () => {
+            this.combatSystem.endPlayerTurn()
+        })
+
+        this.endTurnButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: this.endTurnButton,
+                scale: 1.1,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        this.endTurnButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: this.endTurnButton,
+                scale: 1,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        // Adding the combat system events
+        this.combatSystem.events.on(CombatSystem.Events.PLAYER_TURN_ENDED, () => {
+            this.tweens.add({
+                targets: this.endTurnButton,
+                alpha: 0,
+                ease: 'Power1',
+                duration: 100
+            })
+        })
+
+        this.combatSystem.events.on(CombatSystem.Events.TURN_STARTED, (combatState) => {
+            if (this.combatSystem.currentTurnSide == CombatSystem.Side.PLAYERS) {
+                this.tweens.add({
+                    targets: this.endTurnButton,
+                    alpha: 1,
+                    ease: 'Power1',
+                    duration: 100
+                })
+            }
         })
     }
 
@@ -357,7 +416,7 @@ export default class CombatScene extends Scene {
 
             // Remove the card form the hand pile
             if (playedCard) {
-                if (cardView.cardModel.canPlay()) {
+                if (cardView.cardModel.canPlay(this.combatSystem)) {
                     cardView.cardModel.onPlay(targets)
                     cardView.cardModel.afterPlay()
                     this.combatSystem.playerStats.playerCombatState.hand.remove(cardView.cardModel)
