@@ -61,8 +61,6 @@ export default class CombatScene extends Scene {
                 this.combatState.enemyInstances[i]
             )
 
-            this.enemyInteraction(enemySprite)
-
             spriteSizes.push(enemySprite.getBounds().width)
 
             this.enemiesContainer.add(enemySprite)
@@ -78,6 +76,12 @@ export default class CombatScene extends Scene {
 
             nextPosition += (spriteSizes[index]) + enemySpacing
             index++;
+        })
+
+        // Enemy calls after position changes
+        this.enemiesContainer.each((enemy) => {
+            this.enemyInteraction(enemy)
+            enemy.setupHealthBar(this.enemiesContainer.x, this.enemiesContainer.y)
         })
 
         // Creating the creatures 

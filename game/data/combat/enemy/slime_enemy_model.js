@@ -6,7 +6,8 @@ export default class SlimeEnemyModel extends EnemyModel {
 
         this.id = "slime";
         this.name = "Slime";
-        this.maxHP = 10;
+        this.maxHP = 20;
+        this.minHP = 10;
         this.maxBlock = 0;
     }
 }

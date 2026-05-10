@@ -1,4 +1,5 @@
 import CardModel from "../../../system/combat/card/card_model";
+import DamageEffect from "../effect/damage_effect";
 
 export default class SlashCard extends CardModel {
     constructor() {
@@ -18,6 +19,10 @@ export default class SlashCard extends CardModel {
     }
 
     onPlay(targets) {
-        console.log("Slashed targets")
+        targets.forEach((target) => {
+            let damageEffect = new DamageEffect(this.slashDamage)
+
+            target.effectSystem.process(damageEffect)
+        })
     }
 }

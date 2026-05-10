@@ -1,3 +1,5 @@
+import EffectSystem from "../effect/effect_system";
+
 export default class EntityStats {
     static Events = {
         HEALTH_CHANGED: "health_changed",
@@ -10,6 +12,8 @@ export default class EntityStats {
 
         this.block = 0;
 
+        this.effectSystem = new EffectSystem(this);
+
         this.statsEventEmitter = new Phaser.Events.EventEmitter();
     }
 
@@ -20,6 +24,7 @@ export default class EntityStats {
 
         if (this.hp < 0) {
             this.statsEventEmitter.emit(EntityStats.Events.DIED)
+            this.hp = 0;
         }
 
         this.statsEventEmitter.emit(EntityStats.Events.HEALTH_CHANGED, { currentHp: this.hp })

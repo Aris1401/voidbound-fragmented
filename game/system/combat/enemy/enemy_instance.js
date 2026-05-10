@@ -14,7 +14,7 @@ export default class EnemyInstance {
         this.enemyStats = new EnemyStats();
 
         this.enemyStats.maxHp = Math.floor(Math.random() * (this.enemyModel.maxHP - this.enemyModel.minHP) + this.enemyModel.minHP)
-        this.enemyStats.hp = this.maxHP
+        this.enemyStats.hp = this.enemyStats.maxHp
 
         this.enemyStats.block = Math.floor(Math.random() * (this.enemyModel.maxBlock - this.enemyModel.minBlock) + this.enemyModel.minBlock)
     }
