@@ -12,6 +12,10 @@ export default class CombatScene extends Scene {
     init(data) {
         this.combatState = data.combatState;
         this.combatSystem = data.combatSystem;
+
+        this.combatSystem.events.on(CombatSystem.Events.COMBAT_WON, () => {
+            this.onCombatWon()
+        })
     }
 
     preload() {
@@ -179,6 +183,17 @@ export default class CombatScene extends Scene {
         })
 
         this.drawPileButton.add(this.drawPileText)
+
+        // Discard Pile
+        this.discardPileButton = this.add.container(this.sys.canvas.width - 200, this.sys.canvas.height / 1.5).setDepth(10)
+        this.discardPileButton.add(this.add.image(0, 0, 'draw_pile').setTint(0xff0000))
+
+        this.discardPileText = this.add.text(0, 0, this.combatSystem.playerStats.playerCombatState.discardPile.cards.length)
+        this.combatSystem.playerStats.playerCombatState.discardPile.events.on(CardPile.Events.PILE_CHANGED, (cards) => {
+            this.discardPileText.setText(cards.length)
+        })
+
+        this.discardPileButton.add(this.discardPileText)
 
         // The card tooltip
         this.cardTooltip = this.add.container(0, 0)
@@ -440,6 +455,9 @@ export default class CombatScene extends Scene {
                     cardView.cardModel.onPlay(targets)
                     cardView.cardModel.afterPlay()
                     this.combatSystem.playerStats.playerCombatState.hand.remove(cardView.cardModel)
+
+                    this.combatSystem.playerStats.playerCombatState.discardPile.push(cardView.cardModel)
+                    this.combatSystem.playerStats.playerCombatState.discardPile.shuffle()
                 } else {
                     this.cancelCardDrag(cardView)   
                 }
@@ -460,6 +478,10 @@ export default class CombatScene extends Scene {
             duration: 250,
             ease: 'Power2'
         })
+    }
+
+    onCombatWon() {
+        
     }
 
     update() {

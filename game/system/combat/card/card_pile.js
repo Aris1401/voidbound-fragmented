@@ -56,6 +56,10 @@ export default class CardPile {
         return card
     }
 
+    size() {
+        return this.cards.length
+    }
+
     clear() {
         this.cards = []
 

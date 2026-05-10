@@ -38,8 +38,7 @@ export default class CombatState {
 
         if (enemyIndex > -1) {
             this.enemyInstances.splice(enemyIndex, 1)
+            this.events.emit(CombatState.Events.ENEMIES_CHANGED, this.enemyInstances)
         }
-
-        this.events.emit(CombatState.Events.ENEMIES_CHANGED, this.enemyInstances)
     }
 }

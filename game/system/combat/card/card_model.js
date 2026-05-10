@@ -28,7 +28,7 @@ export default class CardModel {
 
         let result = this.playerStats.playerCombatState.energy - this.energyCost
 
-        return result > 0
+        return result >= 0
     }
 
     onPlay(targets) {

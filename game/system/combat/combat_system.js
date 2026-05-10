@@ -40,9 +40,11 @@ export default class CombatSystem {
     }
 
     checkWinCondition() {
-        if (this.combatState.enemyInstances > 0) return;
+        if (this.combatState.enemyInstances.length > 0) return;
 
         this.events.emit(CombatSystem.Events.COMBAT_WON)
+
+        console.log("Combat Won")
     }
 
     startCombat() {
@@ -73,6 +75,20 @@ export default class CombatSystem {
     
     setupPlayerTurn() {
         this.playerStats.playerCombatState.gainMaxEnergy()
+
+        if (this.playerStats.playerCombatState.drawPile.size() <= 0) {
+            let cardFromDiscard = this.playerStats.playerCombatState.discardPile.popFront()
+            while (cardFromDiscard) {
+                this.playerStats.playerCombatState.drawPile.push(cardFromDiscard)
+                cardFromDiscard = this.playerStats.playerCombatState.discardPile.popFront()
+
+                if (cardFromDiscard == undefined) break;
+            } 
+
+            this.playerStats.playerCombatState.drawPile.shuffle()
+        }
+
+        console.log(this.playerStats.playerCombatState.hand)
 
         let cardFromDraw = this.playerStats.playerCombatState.drawPile.popFront()
         let handAvailable = this.playerStats.playerCombatState.hand.push(cardFromDraw)
