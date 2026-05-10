@@ -8,6 +8,8 @@ export default class PlayerStats extends EntityStats {
     
         this.currency = 0;
 
+        this.maxEnergy = 5
+
         this.deck = new CardPile();
         this.relics = [];
 
@@ -16,8 +18,13 @@ export default class PlayerStats extends EntityStats {
 
     setupCombat() {
         this.playerCombatState = new PlayerCombatState();
+        this.playerCombatState.energy = this.maxEnergy
+        this.playerCombatState.maxEnergy = this.maxEnergy
+
+        this.playerCombatState.events.emit(PlayerCombatState.Events.ENERGY_CHANGED, this.maxEnergy, this.maxEnergy)
 
         for (let i = 0; i < this.deck.cards.length; i++) {
+            this.deck.cards[i].playerStats = this
             this.playerCombatState.drawPile.push(this.deck.cards[i])
         }
     }

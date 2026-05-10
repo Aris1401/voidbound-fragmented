@@ -10,16 +10,32 @@ export default class CardModel {
         this.id = "";
         this.name = "";
 
-        this.energy_cost = 1;
+        this.energyCost = 1;
 
         this.pile = null;
 
         this.targeting = CardModel.TargetType.SINGLE
+
+        this.playerStats = null;
     }
 
     getDescription() { return ""; }
 
+    canPlay() {
+        let result = this.playerStats.playerCombatState.energy - this.energyCost
+
+        return result > 0
+    }
+
     onPlay(targets) {
 
+    }
+
+    afterPlay() {
+        this.spendResources()
+    }
+
+    spendResources() {
+        this.playerStats.playerCombatState.loseEnergy(this.energyCost)
     }
 }

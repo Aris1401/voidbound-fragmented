@@ -28,12 +28,15 @@ export default class CardView extends Phaser.GameObjects.Container {
 
         // Loading card image
         let loader = new Phaser.Loader.LoaderPlugin(this.scene)
-
+        
         loader.image(this.cardModel.id, `card/${ this.cardModel.id }.png`)
         loader.once(Phaser.Loader.Events.COMPLETE, () => {
             this.cardEffectImage = this.scene.add.image(0, 0, this.cardModel.id)
             this.add(this.cardEffectImage)
         })
         loader.start()
+
+        // Add the energy cost
+        this.add(this.scene.add.text((this.getBounds().width / 2) - 20, (this.getBounds().height / 2) - 20, this.cardModel.energyCost))
     }
 }

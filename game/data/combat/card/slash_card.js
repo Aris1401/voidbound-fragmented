@@ -9,6 +9,8 @@ export default class SlashCard extends CardModel {
         this.name = "Slash"
         this.description = "Deals an amount"
 
+        this.energyCost = 2
+
         this.targeting = CardModel.TargetType.SINGLE
 
         this.slashDamage = 5;

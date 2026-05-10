@@ -6,6 +6,7 @@ import CardView from '../system/combat/card/card_view.js';
 import CardModel from '../system/combat/card/card_model.js';
 import EntityStats from '../system/combat/stats/entity_stats.js';
 import CombatSystem from '../system/combat/combat_system.js';
+import PlayerCombatState from '../system/combat/player/player_combat_state.js';
 
 export default class CombatScene extends Scene {
     init(data) {
@@ -26,7 +27,7 @@ export default class CombatScene extends Scene {
 
         // Loading combat ui
         this.load.image('draw_pile', 'combat/draw_pile.png')
-
+        this.load.image('energy', 'combat/energy.png')
         this.load.image('enemy_selector', 'combat/enemy_selector.png')
 
         // Card ui
@@ -179,6 +180,18 @@ export default class CombatScene extends Scene {
         })
 
         this.draggedCardView = null
+
+        // The player energy
+        this.energyContainer = this.add.container(this.drawPileButton.x, this.drawPileButton.y + 100)
+        let energyImage = this.add.image(0, 0, 'energy').setDepth(20)
+        this.energyContainer.add(energyImage)
+        this.enemiesContainerText = this.add.text(0, 0, this.combatSystem.playerStats.maxEnergy).setDepth(21)
+
+        this.energyContainer.add(this.enemiesContainerText)
+
+        this.combatSystem.playerStats.playerCombatState.events.on(PlayerCombatState.Events.ENERGY_CHANGED, (currentEnergy, maxEnergy) => {
+            this.enemiesContainerText.setText(currentEnergy)
+        })
     }
 
     showCardTooltip(cardView) {
@@ -344,8 +357,13 @@ export default class CombatScene extends Scene {
 
             // Remove the card form the hand pile
             if (playedCard) {
-                cardView.cardModel.onPlay(targets)
-                this.combatSystem.playerStats.playerCombatState.hand.remove(cardView.cardModel)
+                if (cardView.cardModel.canPlay()) {
+                    cardView.cardModel.onPlay(targets)
+                    cardView.cardModel.afterPlay()
+                    this.combatSystem.playerStats.playerCombatState.hand.remove(cardView.cardModel)
+                } else {
+                    this.cancelCardDrag(cardView)   
+                }
             }
             else this.cancelCardDrag(cardView)
         }
