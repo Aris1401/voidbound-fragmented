@@ -35,6 +35,8 @@ export default class GameScene extends Scene {
         
         // Creating the player stats
         this.playerStats = new PlayerStats();
+        this.playerStats.maxHp = 200
+        this.playerStats.hp = this.playerStats.maxHp
 
         // Mockup
         this.playerStats.deck.push(new SlashCard())

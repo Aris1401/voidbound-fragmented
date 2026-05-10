@@ -3,6 +3,7 @@ import EffectSystem from "../effect/effect_system";
 export default class EntityStats {
     static Events = {
         HEALTH_CHANGED: "health_changed",
+        TOOK_DAMAGE: "took_damage",
         DIED: "died"
     }
 
@@ -27,6 +28,7 @@ export default class EntityStats {
             this.hp = 0;
         }
 
+        if (amount > 0) this.statsEventEmitter.emit(EntityStats.Events.TOOK_DAMAGE, amount)
         this.statsEventEmitter.emit(EntityStats.Events.HEALTH_CHANGED, { currentHp: this.hp })
     }
 }

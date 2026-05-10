@@ -18,7 +18,7 @@ export default class PlayerStats extends EntityStats {
 
     setupCombat() {
         this.playerCombatState = new PlayerCombatState();
-        this.playerCombatState.energy = this.maxEnergy
+        this.playerCombatState.energy = 0
         this.playerCombatState.maxEnergy = this.maxEnergy
 
         this.playerCombatState.events.emit(PlayerCombatState.Events.ENERGY_CHANGED, this.maxEnergy, this.maxEnergy)

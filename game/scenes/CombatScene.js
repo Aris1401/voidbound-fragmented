@@ -51,10 +51,33 @@ export default class CombatScene extends Scene {
     createActors() {
         // Player
         this.playerContainer = this.add.container(this.sys.canvas.width / 4, this.sys.canvas.height / 2)
-
         this.playerContainer.add(this.add.sprite(0, 0, 'lia', 0))
 
-        // Enemies
+        // Creating the player health bar
+        this.playerHealthBar = this.add.rectangle(0, 64, 100, 10, 0xff0000)
+        this.playerHealthBarBg = this.add.rectangle(this.playerHealthBar.x, this.playerHealthBar.y, 100, 10, 0xffffff)
+
+        this.playerContainer.add(this.playerHealthBarBg)
+        this.playerContainer.add(this.playerHealthBar)
+
+        this.combatSystem.playerStats.statsEventEmitter.on(EntityStats.Events.HEALTH_CHANGED, (data) => {
+            this.tweens.add({
+                targets: this.playerHealthBar,
+                width: (data.currentHp * 100) / this.combatSystem.playerStats.maxHp,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        this.combatSystem.playerStats.statsEventEmitter.on(EntityStats.Events.TOOK_DAMAGE, (amount) => {
+            this.cameras.main.shake(.2, amount)
+        })
+
+        // =========================== Enemies
+        this.createEnemies()
+    }
+
+    createEnemies() {
         this.singleTargetedEnemy = null
         this.enemiesContainer = this.add.container(this.sys.canvas.width / 1.5, this.sys.canvas.height / 2)
 
@@ -92,9 +115,6 @@ export default class CombatScene extends Scene {
             this.enemyInteraction(enemy)
             enemy.setupHealthBar(this.enemiesContainer.x, this.enemiesContainer.y)
         })
-
-        // Creating the creatures 
-        console.log(totalLength)
     }
 
     enemyInteraction(enemyView) {

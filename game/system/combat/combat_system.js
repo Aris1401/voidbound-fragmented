@@ -55,7 +55,7 @@ export default class CombatSystem {
             this.setupPlayerTurn()
         } else {
             // The enemy's turns
-            console.log("Enemy's turn")
+            this.setupEnemyTurn()
         }
 
         this.events.emit(CombatSystem.Events.TURN_STARTED, this.combatState)
@@ -72,6 +72,8 @@ export default class CombatSystem {
     }
     
     setupPlayerTurn() {
+        this.playerStats.playerCombatState.gainMaxEnergy()
+
         let cardFromDraw = this.playerStats.playerCombatState.drawPile.popFront()
         let handAvailable = this.playerStats.playerCombatState.hand.push(cardFromDraw)
         if (!handAvailable) this.playerStats.playerCombatState.drawPile.push(cardFromDraw)
@@ -88,6 +90,22 @@ export default class CombatSystem {
             }
         }
 
+    }
+
+    async setupEnemyTurn() {
+        for (const enemy of this.combatState.enemyInstances) {
+            await enemy.takeTurn(this.playerStats);
+        }
+
+        this.endEnemyTurn()
+    }
+
+    endEnemyTurn() {
+        if (this.currentTurnSide != CombatSystem.Side.ENEMYS) return;
+
+        this.switchTurn()
+
+        this.startTurn()
     }
 
     endPlayerTurn() {

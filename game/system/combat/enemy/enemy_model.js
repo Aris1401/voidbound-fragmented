@@ -7,6 +7,9 @@ export default class EnemyModel {
         this.maxHP = 100;
         this.maxBlock = 100;
         this.minBlock = 0;
+    }
+
+    executeMove(playerStats) {
 
     }
 }

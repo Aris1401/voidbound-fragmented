@@ -1,11 +1,13 @@
 import EnemyStats from "../../../data/combat/stats/enemy/enemy_stats";
 import EntityStats from "../stats/entity_stats";
+import EnemyInstance from "./enemy_instance";
 
 export default class EnemyView extends Phaser.GameObjects.Sprite {
     constructor(scene, name, enemyInstance) {
         super(scene, 0, 0, name)
 
         this.enemyInstance = enemyInstance;
+        this.setupEvents()
 
         this.scene.add.existing(this);
     }
@@ -25,6 +27,16 @@ export default class EnemyView extends Phaser.GameObjects.Sprite {
         this.enemyInstance.enemyStats.statsEventEmitter.on(EnemyStats.Events.DIED, () => {
             this.die()
         })
+    }
+
+    setupEvents() {
+        this.enemyInstance.events.on(EnemyInstance.Events.PERFORMED_MOVE, async (animation) => {
+            await this.onPerformedMove(animation)
+        })
+    }
+
+    async onPerformedMove(animation) {
+        await animation(this)
     }
 
     die() {
