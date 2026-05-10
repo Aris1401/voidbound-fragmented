@@ -23,6 +23,11 @@ export default class CombatScene extends Scene {
             this.onCombatLost()
         })
 
+        this.combatSystem.events.on(CombatSystem.Events.COMBAT_ENDED, () => {
+            // TODO: Temporary when finding gameplay desing fix
+            this.combatSystem.playerStats.hp = this.combatSystem.playerStats.maxHp
+        })
+
         this.input.keyboard.on('keydown-T', () => {
             this.combatSystem.playerStats.takeDamage(99999999999)
         })

@@ -23,6 +23,10 @@ export default class BaseEnemy extends Entity {
         this.combatSystem.events.once(CombatSystem.Events.COMBAT_WON, () => {
             this.destroy()
         })
+
+        this.combatSystem.events.once(CombatSystem.Events.COMBAT_ENDED, () => {
+            this.playerOverlapped = false;
+        })
         
         combatEncounter.startCombat()
     }

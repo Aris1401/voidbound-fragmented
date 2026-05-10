@@ -11,6 +11,7 @@ export default class CombatSystem {
         ENEMIES_CHANGED: "enemies_changed",
         COMBAT_WON: "combat_won",
         COMBAT_LOST: "combat_lost",
+        COMBAT_ENDED: "combat_ended",
         TURN_ENDED: "turn_ended",
         TURN_STARTED: "turn_started",
         PLAYER_TURN_ENDED: "player_turn_ended"
@@ -32,6 +33,7 @@ export default class CombatSystem {
 
         this.playerStats.statsEventEmitter.on(EntityStats.Events.DIED, () => {
             this.events.emit(CombatSystem.Events.COMBAT_LOST)
+            this.events.emit(CombatSystem.Events.COMBAT_ENDED)
         })
     }
 
@@ -51,6 +53,7 @@ export default class CombatSystem {
         if (this.combatState.enemyInstances.length > 0) return;
 
         this.events.emit(CombatSystem.Events.COMBAT_WON)
+        this.events.emit(CombatSystem.Events.COMBAT_ENDED)
 
         console.log("Combat Won")
     }
