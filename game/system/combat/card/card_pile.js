@@ -23,7 +23,7 @@ export default class CardPile {
 
     push(card) {
         if (this.pileSizeRestricted) {
-            if (this.cards.length + 1 > this.pileSize) return false;
+            if (this.cards.length + 1 >= this.pileSize) return false;
         }
 
         if (card == undefined) return;

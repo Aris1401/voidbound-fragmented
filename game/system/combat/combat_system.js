@@ -1,4 +1,5 @@
 import CombatState from "./combat_state";
+import EntityStats from "./stats/entity_stats";
 
 export default class CombatSystem {
     static Side = {
@@ -9,6 +10,7 @@ export default class CombatSystem {
     static Events = {
         ENEMIES_CHANGED: "enemies_changed",
         COMBAT_WON: "combat_won",
+        COMBAT_LOST: "combat_lost",
         TURN_ENDED: "turn_ended",
         TURN_STARTED: "turn_started",
         PLAYER_TURN_ENDED: "player_turn_ended"
@@ -27,6 +29,10 @@ export default class CombatSystem {
 
     setPlayerStats(playerStats) {
         this.playerStats = playerStats;
+
+        this.playerStats.statsEventEmitter.on(EntityStats.Events.DIED, () => {
+            this.events.emit(CombatSystem.Events.COMBAT_LOST)
+        })
     }
 
     setCombatState(combatState) {
@@ -79,6 +85,8 @@ export default class CombatSystem {
         this.playerStats.playerCombatState.gainMaxEnergy()
 
         if (this.playerStats.playerCombatState.drawPile.size() <= 0) {
+            this.playerStats.playerCombatState.discardPile.shuffle()
+
             let cardFromDiscard = this.playerStats.playerCombatState.discardPile.popFront()
             while (cardFromDiscard) {
                 this.playerStats.playerCombatState.drawPile.push(cardFromDiscard)

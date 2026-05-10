@@ -7,6 +7,7 @@ import CardModel from '../system/combat/card/card_model.js';
 import EntityStats from '../system/combat/stats/entity_stats.js';
 import CombatSystem from '../system/combat/combat_system.js';
 import PlayerCombatState from '../system/combat/player/player_combat_state.js';
+import GameScene from './GameScene.js';
 
 export default class CombatScene extends Scene {
     init(data) {
@@ -16,6 +17,14 @@ export default class CombatScene extends Scene {
 
         this.combatSystem.events.on(CombatSystem.Events.COMBAT_WON, () => {
             this.onCombatWon()
+        })
+
+        this.combatSystem.events.on(CombatSystem.Events.COMBAT_LOST, () => {
+            this.onCombatLost()
+        })
+
+        this.input.keyboard.on('keydown-T', () => {
+            this.combatSystem.playerStats.takeDamage(99999999999)
         })
     }
 
@@ -51,6 +60,7 @@ export default class CombatScene extends Scene {
         this.createActors();
 
         this.createRewardUI()
+        this.createGameOverUI()
 
         this.combatSystem.startCombat();
     }
@@ -438,6 +448,8 @@ export default class CombatScene extends Scene {
     onCardViewReleased(cardView) {
         if (cardView.cardState != CardView.CardState.DRAGGED) return;
 
+        cardView.cardState = CardView.CardState.NORMAL
+
         // TODO: If the move is not valid
         if (cardView.y - (cardView.getBounds().height / 2) > 0) {
             // If the card is dropped and the bottom of the screen
@@ -461,6 +473,8 @@ export default class CombatScene extends Scene {
                         break
                     }
                 case CardModel.TargetType.SELF:
+                    targets = [this.combatSystem.playerStats]
+                    playedCard = true
                     break
             }
 
@@ -482,8 +496,6 @@ export default class CombatScene extends Scene {
     }
     
     cancelCardDrag(cardView) {
-        cardView.cardState = CardView.CardState.NORMAL
-
         this.draggedCardView = null;
         
         this.tweens.add({
@@ -571,16 +583,94 @@ export default class CombatScene extends Scene {
         })
     }
 
+    createGameOverUI() {
+        this.gameOverUI = this.add.container(this.sys.canvas.width / 2, this.sys.canvas.height / 2)
+
+        // Popup title
+        let gameOverBg = this.add.rectangle(0, 0, 400, 200, 0x000000, .8)
+        let gameOverText = this.add.text(0, -(gameOverBg.getBounds().height / 2) + 30, 'You lose!', { fontSize: '24px' }).setAbove(gameOverBg).setOrigin(0.5)
+
+        // Cashout
+        this.gameOverButton = this.add.container(0, (gameOverBg.getBounds().height / 2) - 50)
+        let gameOverButtonBg = this.add.image(0, 0, 'end_turn').setAbove(gameOverBg).setScale(1.2)
+        this.gameOverButton.add(gameOverButtonBg)
+        this.gameOverButton.add(this.add.text(0, 0, `Flee`).setOrigin(0.5))
+
+        this.gameOverButton.setSize(gameOverButtonBg.getBounds().width, gameOverButtonBg.getBounds().height)
+        this.gameOverButton.setInteractive()
+
+        this.gameOverButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: this.gameOverButton,
+                scale: 1.1,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        this.gameOverButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: this.gameOverButton,
+                scale: 1,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        this.gameOverButton.on('pointerdown', () => {
+            this.onFlee()
+        })
+
+        this.gameOverUI.add(gameOverBg).setDepth(25)
+        this.gameOverUI.add(gameOverText)
+        this.gameOverUI.add(this.gameOverButton)
+
+        this.gameOverUI.visible = false
+        this.canFlee = false
+    }
+
+    showGameOverUI() {
+        this.gameOverUI.visible = true
+
+        this.tweens.add({
+            targets: this.gameOverUI,
+            alpha: { from: 0, to: 1 },
+            y: { from: (this.sys.canvas.height / 2) - 100, to: this.sys.canvas.height / 2 },
+            ease: 'Power2',
+            duration: 250
+        })
+    }
+
     onCombatWon() {
         this.canCashout = true
 
         this.showRewardUI()
     }
 
+    onCombatLost() {
+        this.canFlee = true;
+
+        this.showGameOverUI()
+    }
+
     onCashoutReward() {
         if (!this.canCashout) return;
 
-        
+        this.combatSystem.playerStats.gainCurrency(this.encounterModel.moneyReward)
+
+        this.encounterModel.cardRewards.forEach((cardModel) => {
+            this.combatSystem.playerStats.deck.push(cardModel)
+        })
+
+        this.scene.stop()
+        this.scene.switch('game')
+    }
+
+    onFlee() {
+        if (!this.canFlee) return;
+
+        this.scene.stop()
+        this.scene.switch('game')
     }
 
     update() {

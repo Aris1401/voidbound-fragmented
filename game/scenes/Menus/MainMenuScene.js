@@ -6,8 +6,8 @@ export default class MainMenuScene extends Scene {
         super.preload()
         manager.preload(this)
 
-        if (!this.scene.get('GameScene')) {
-            this.scene.add('GameScene', GameScene, false)
+        if (!this.scene.get('game')) {
+            this.scene.add('game', GameScene, false)
         }
     }
 
@@ -22,7 +22,7 @@ export default class MainMenuScene extends Scene {
 
     update() {
         this.input.keyboard.on('keydown', () => {
-            this.scene.start('GameScene')
+            this.scene.start('game')
         })
     }
 }

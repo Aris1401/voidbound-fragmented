@@ -19,6 +19,8 @@ export default class BaseEnemy extends Entity {
 
         // Creating the combat encounter
         let combatEncounter = new CombatEncounter(this.scene, 3, this.encounterModel, this.combatSystem)
+        this.destroy()
+        
         combatEncounter.startCombat()
     }
 }

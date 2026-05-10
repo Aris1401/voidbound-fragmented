@@ -16,6 +16,10 @@ export default class PlayerStats extends EntityStats {
         this.playerCombatState = null;
     }
 
+    gainCurrency(value) {
+        this.currency += value
+    }
+
     setupCombat() {
         this.playerCombatState = new PlayerCombatState();
         this.playerCombatState.energy = 0

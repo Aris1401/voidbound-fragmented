@@ -31,4 +31,11 @@ export default class EntityStats {
         if (amount > 0) this.statsEventEmitter.emit(EntityStats.Events.TOOK_DAMAGE, amount)
         this.statsEventEmitter.emit(EntityStats.Events.HEALTH_CHANGED, { currentHp: this.hp })
     }
+
+    heal(amount) {
+        if (amount > this.maxHp) amount = this.maxHp;
+        this.hp += amount;
+
+        this.statsEventEmitter.emit(EntityStats.Events.HEALTH_CHANGED, { currentHp: this.hp })
+    }
 }
