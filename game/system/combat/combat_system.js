@@ -1,7 +1,16 @@
+import CombatState from "./combat_state";
+
 export default class CombatSystem {
+    static Events = {
+        ENEMIES_CHANGED: "enemies_changed",
+        COMBAT_WON: "combat_won"
+    }
+
     constructor() {
         this.playerStats = null;
         this.combatState = null; 
+
+        this.events = new Phaser.Events.EventEmitter();
     }
 
     setPlayerStats(playerStats) {
@@ -11,7 +20,19 @@ export default class CombatSystem {
     setCombatState(combatState) {
         this.combatState = combatState;
 
+        this.combatState.events.on(CombatState.Events.ENEMIES_CHANGED, (enemyInstances) => {
+            this.checkWinCondition()
+
+            this.events.emit(CombatSystem.Events.ENEMIES_CHANGED, enemyInstances)
+        })
+
         this.playerStats.setupCombat()
+    }
+
+    checkWinCondition() {
+        if (this.combatState.enemyInstances > 0) return;
+
+        this.events.emit(CombatSystem.Events.COMBAT_WON)
     }
 
     startCombat() {

@@ -25,5 +25,15 @@ export default class CardView extends Phaser.GameObjects.Container {
         this.setSize(cardBaseImage.getBounds().x, cardBaseImage.getBounds().y)
 
         this.setInteractive(this.getBounds(), Phaser.Geom.Rectangle.Contains)
+
+        // Loading card image
+        let loader = new Phaser.Loader.LoaderPlugin(this.scene)
+
+        loader.image(this.cardModel.id, `card/${ this.cardModel.id }.png`)
+        loader.once(Phaser.Loader.Events.COMPLETE, () => {
+            this.cardEffectImage = this.scene.add.image(0, 0, this.cardModel.id)
+            this.add(this.cardEffectImage)
+        })
+        loader.start()
     }
 }

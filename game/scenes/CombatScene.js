@@ -5,6 +5,7 @@ import SlashCard from '../data/combat/card/slash_card.js';
 import CardView from '../system/combat/card/card_view.js';
 import CardModel from '../system/combat/card/card_model.js';
 import EntityStats from '../system/combat/stats/entity_stats.js';
+import CombatSystem from '../system/combat/combat_system.js';
 
 export default class CombatScene extends Scene {
     init(data) {
@@ -156,6 +157,13 @@ export default class CombatScene extends Scene {
 
         this.drawPileButton.add(this.drawPileText)
 
+        // The card tooltip
+        this.cardTooltip = this.add.container(0, 0)
+        this.cardTooltipBg = this.add.rectangle(0, 0, 400, 400, 0x000000, 0.8).setDepth(20)
+        this.cardTooltipText = this.add.text(0, 0, "Test", { wordWrap: { width: 200 } }).setAbove(this.cardTooltipBg)
+
+        this.cardTooltip.add([this.cardTooltipBg, this.cardTooltipText]).setAlpha(0)
+
         // The player hand
         this.playerHand = this.add.container(this.sys.canvas.width / 2, this.sys.canvas.height - 100)
         this.combatSystem.playerStats.playerCombatState.hand.events.on(CardPile.Events.CARD_ADDED, (card) => {
@@ -171,6 +179,30 @@ export default class CombatScene extends Scene {
         })
 
         this.draggedCardView = null
+    }
+
+    showCardTooltip(cardView) {
+        this.cardTooltipText.setText(cardView.cardModel.getDescription())
+
+        this.cardTooltipBg.setSize(this.cardTooltipText.displayWidth + 10, this,this.cardTooltipText.displayHeight + 10)
+
+        this.add.tween({
+            targets: this.cardTooltip,
+            x: this.playerHand.x + cardView.x - (cardView.getBounds().width / 2),
+            y: this.playerHand.y + cardView.y - cardView.getBounds().height - this.cardTooltipText.displayHeight,
+            alpha: 1,
+            ease: 'Power2',
+            duration: 250
+        })
+    }
+
+    hideCardTooltip() {
+        this.add.tween({
+            targets: this.cardTooltip,
+            alpha: 0,
+            ease: 'Power2',
+            duration: 250
+        })
     }
 
     onCardAddedToHand(card) {
@@ -249,6 +281,8 @@ export default class CombatScene extends Scene {
             ease: 'Power2',
             duration: 250
         })
+
+        this.showCardTooltip(cardView)
     }
 
     onCardViewUnhover(cardView) {
@@ -262,10 +296,14 @@ export default class CombatScene extends Scene {
             ease: 'Power2',
             duration: 250
         })
+
+        this.hideCardTooltip()
     }
 
     onCardViewPressed(cardView) {
         if (cardView.cardState != CardView.CardState.NORMAL && cardView.cardState != CardView.CardState.HOVERED) return;
+
+        this.hideCardTooltip()
 
         cardView.cardState = CardView.CardState.DRAGGED
 

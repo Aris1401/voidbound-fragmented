@@ -2,8 +2,14 @@ import EnemyInstance from "./enemy/enemy_instance"
 import EntityStats from "./stats/entity_stats";
 
 export default class CombatState {
+    static Events = {
+        ENEMIES_CHANGED: "enemies_changed"
+    }
+
     constructor() {
         this.enemyInstances = []
+
+        this.events = new Phaser.Events.EventEmitter()
     }
 
     createEnemy(enemyModel) {
@@ -23,6 +29,8 @@ export default class CombatState {
         enemyInstance.enemyStats.statsEventEmitter.on(EntityStats.Events.DIED, () => {
             this.removeEnemy(enemyInstance)
         })
+
+        this.events.emit(CombatState.Events.ENEMIES_CHANGED, this.enemyInstances)
     }
 
     removeEnemy(enemyInstance) {
@@ -31,5 +39,7 @@ export default class CombatState {
         if (enemyIndex > -1) {
             this.enemyInstances.splice(enemyIndex, 1)
         }
+
+        this.events.emit(CombatState.Events.ENEMIES_CHANGED, this.enemyInstances)
     }
 }
