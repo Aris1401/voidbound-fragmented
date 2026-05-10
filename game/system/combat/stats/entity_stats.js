@@ -1,0 +1,27 @@
+export default class EntityStats {
+    static Events = {
+        HEALTH_CHANGED: "health_changed",
+        DIED: "died"
+    }
+
+    constructor() {
+        this.maxHp = 0;
+        this.hp = 0;
+
+        this.block = 0;
+
+        this.statsEventEmitter = new Phaser.Events.EventEmitter();
+    }
+
+    takeDamage(amount) {
+        if (amount < 0) amount = 0;
+
+        this.hp -= amount;
+
+        if (this.hp < 0) {
+            this.statsEventEmitter.emit(EntityStats.Events.DIED)
+        }
+
+        this.statsEventEmitter.emit(EntityStats.Events.HEALTH_CHANGED, { currentHp: this.hp })
+    }
+}

@@ -8,8 +8,9 @@ import StorySystem from '../system/story/story_system'
 import DialogFactory from '../system/story/dialog/dialog_factory'
 import BaseEnemy from '../entities/enemy/base_enemy'
 import CombatScene from './CombatScene'
-import PlayerStats from '../system/player/player_stats'
 import CombatSystem from '../system/combat/combat_system'
+import PlayerStats from '../data/combat/stats/player/player_stats'
+import SlashCard from '../data/combat/card/slash_card'
 
 export default class GameScene extends Scene {
     preload() {
@@ -34,6 +35,12 @@ export default class GameScene extends Scene {
         
         // Creating the player stats
         this.playerStats = new PlayerStats();
+
+        // Mockup
+        this.playerStats.deck.push(new SlashCard())
+        this.playerStats.deck.push(new SlashCard())
+        this.playerStats.deck.push(new SlashCard())
+        this.playerStats.deck.push(new SlashCard())
 
         // Creation of the combat system
         this.combatSystem = new CombatSystem();
