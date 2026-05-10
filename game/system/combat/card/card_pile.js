@@ -39,9 +39,10 @@ export default class CardPile {
     }
 
     remove(card) {
-        this.cards = this.cards.map((_card) => {
-            if (_card != card) return card;
-        })
+        let cardIndex = this.cards.indexOf(card)
+        if (cardIndex > -1) {
+            this.cards.splice(cardIndex, 1)
+        }
 
         this.events.emit(CardPile.Events.CARD_REMOVED, card)
         this.events.emit(CardPile.Events.PILE_CHANGED, this.cards)

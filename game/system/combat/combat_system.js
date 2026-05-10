@@ -16,21 +16,25 @@ export default class CombatSystem {
 
     startCombat() {
         // TODO: Start the turn system
-
+        this.setupPlayerTurn()
+    }
+    
+    setupPlayerTurn() {
         let cardFromDraw = this.playerStats.playerCombatState.drawPile.popFront()
         let handAvailable = this.playerStats.playerCombatState.hand.push(cardFromDraw)
         if (!handAvailable) this.playerStats.playerCombatState.drawPile.push(cardFromDraw)
-
+    
         this.playerStats.playerCombatState.drawPile.shuffle()
         while (handAvailable) {
             cardFromDraw = this.playerStats.playerCombatState.drawPile.popFront()
             handAvailable = this.playerStats.playerCombatState.hand.push(cardFromDraw)
-
+    
             this.playerStats.playerCombatState.drawPile.shuffle()
             if (!handAvailable) {
                 this.playerStats.playerCombatState.drawPile.push(cardFromDraw)
                 break;
             }
         }
+
     }
 }

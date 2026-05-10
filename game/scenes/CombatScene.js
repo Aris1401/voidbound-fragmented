@@ -4,6 +4,7 @@ import CardPile from '../system/combat/card/card_pile.js';
 import SlashCard from '../data/combat/card/slash_card.js';
 import CardView from '../system/combat/card/card_view.js';
 import CardModel from '../system/combat/card/card_model.js';
+import EntityStats from '../system/combat/stats/entity_stats.js';
 
 export default class CombatScene extends Scene {
     init(data) {
@@ -61,6 +62,10 @@ export default class CombatScene extends Scene {
                 this.combatState.enemyInstances[i]
             )
 
+            enemySprite.enemyInstance.enemyStats.statsEventEmitter.on(EntityStats.Events.DIED, () => {
+                this.onEnemyDied(enemySprite)
+            })
+
             spriteSizes.push(enemySprite.getBounds().width)
 
             this.enemiesContainer.add(enemySprite)
@@ -116,6 +121,12 @@ export default class CombatScene extends Scene {
                 duration: 250
             })
         })
+    }
+
+    onEnemyDied(enemyView) {
+        console.log(this.combatState)
+        
+        this.enemiesContainer.remove(enemyView)
     }
 
     createBackground() {
