@@ -11,6 +11,7 @@ import CombatScene from './CombatScene'
 import CombatSystem from '../system/combat/combat_system'
 import PlayerStats from '../data/combat/stats/player/player_stats'
 import SlashCard from '../data/combat/card/slash_card'
+import MainCardDB from '../data/combat/db/main_card_db'
 
 export default class GameScene extends Scene {
     preload() {
@@ -28,6 +29,9 @@ export default class GameScene extends Scene {
         var mainDialogDB = new MainDialogDB();
         var storyState = new StoryState();
         this.storySystem = new StorySystem(this, storyState, mainDialogDB);
+
+        // Main card db
+        this.mainCardDB = new MainCardDB()
         
         // Creating the game camera
         this.cameras.main.setBounds(0, 0, 100*32, 100*32) // Assuming the map is 100x100 tiles of 32px each
@@ -39,14 +43,15 @@ export default class GameScene extends Scene {
         this.playerStats.hp = this.playerStats.maxHp
 
         // Mockup
-        this.playerStats.deck.push(new SlashCard())
-        this.playerStats.deck.push(new SlashCard())
-        this.playerStats.deck.push(new SlashCard())
-        this.playerStats.deck.push(new SlashCard())
+        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
+        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
+        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
+        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
 
         // Creation of the combat system
         this.combatSystem = new CombatSystem();
         this.combatSystem.setPlayerStats(this.playerStats)
+        this.combatSystem.cardDB = this.mainCardDB
 
         // Place lia in the center of the map (50×50 tiles × 16px = 800×800)
         this.lia.sprite.setPosition(391, 975)

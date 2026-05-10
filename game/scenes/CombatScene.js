@@ -12,6 +12,7 @@ export default class CombatScene extends Scene {
     init(data) {
         this.combatState = data.combatState;
         this.combatSystem = data.combatSystem;
+        this.encounterModel = data.encounterModel;
 
         this.combatSystem.events.on(CombatSystem.Events.COMBAT_WON, () => {
             this.onCombatWon()
@@ -48,6 +49,8 @@ export default class CombatScene extends Scene {
         this.createCombatUI();
 
         this.createActors();
+
+        this.createRewardUI()
 
         this.combatSystem.startCombat();
     }
@@ -340,28 +343,7 @@ export default class CombatScene extends Scene {
     }
 
     organizePlayerHand() {
-        let cardSizes = []
-
-        this.playerHand.each((cardView) => {
-            cardSizes.push(cardView.getBounds().width)
-        })
-
-        console.log(cardSizes)
-
-        let totalCardSizes = cardSizes.reduce((a, b) => a + b, 0)
-        let spawnPosition = -(totalCardSizes / 2)
-        let farthestAway = spawnPosition
-        
-        this.playerHand.each((cardView) => {
-            this.tweens.add({
-                targets: cardView,
-                x: spawnPosition,
-                 ease: 'Power1',
-                duration: 250
-            })
-            
-            spawnPosition += cardView.getBounds().width + 5
-        })
+        this.organizeCardContainer(this.playerHand, 10)
 
         // Adjusting the rotation
         // let maxRotation = 35
@@ -374,6 +356,39 @@ export default class CombatScene extends Scene {
             
         //     currentRotation += incrementalRotation
         // })
+    }
+
+    organizeCardContainer(cardContainer, spacing = 5, maxWidth = null) {
+        let cardSizes = []
+
+        cardContainer.each((cardView) => {
+            cardSizes.push(cardView.getBounds().width)
+        })
+
+        let totalCardSizes = cardSizes.reduce((a, b) => a + b, 0)
+
+        // If maxWidth is provided, calculate dynamic spacing to fit within it
+        let effectiveSpacing = spacing
+        if (maxWidth !== null) {
+            const cardCount = cardSizes.length
+            // spacing slots = gaps between cards = cardCount - 1
+            const totalSpacingNeeded = maxWidth - totalCardSizes
+            effectiveSpacing = cardCount > 1 ? totalSpacingNeeded / (cardCount - 1) : 0
+        }
+
+        let totalWidth = totalCardSizes + effectiveSpacing * (cardSizes.length - 1)
+        let spawnPosition = -(totalWidth / 2)
+
+        cardContainer.each((cardView) => {
+            this.tweens.add({
+                targets: cardView,
+                x: spawnPosition,
+                ease: 'Power1',
+                duration: 250
+            })
+
+            spawnPosition += cardView.getBounds().width + effectiveSpacing
+        })
     }
 
     // Card hover
@@ -480,7 +495,91 @@ export default class CombatScene extends Scene {
         })
     }
 
+    createRewardUI() {
+        this.rewardUI = this.add.container(this.sys.canvas.width / 2, this.sys.canvas.height / 2)
+
+        // Popup title
+        let rewardBg = this.add.rectangle(0, 0, 400, 500, 0x000000, .8)
+        let rewardText = this.add.text(0, -(rewardBg.getBounds().height / 2) + 30, 'Rewards', { fontSize: '24px' }).setAbove(rewardBg).setOrigin(0.5)
+
+        // Card container
+        let rewardCardContainer = this.add.container(0, 0)
+        
+        console.log("dsfsdfdsf")
+        console.log(this.encounterModel.cardRewards)
+        console.log("dsfsdfdsf")
+
+        this.encounterModel.cardRewards.forEach((card) => {
+            let cardView = new CardView(this)
+            cardView.setupView(card)
+            cardView.setAbove(rewardBg)
+
+            rewardCardContainer.add(cardView)
+        })
+
+        this.organizeCardContainer(rewardCardContainer, -10)
+
+        // Cashout
+        this.rewardButton = this.add.container(0, (rewardBg.getBounds().height / 2) - 50)
+        let rewardButtonBg = this.add.image(0, 0, 'end_turn').setAbove(rewardBg).setScale(1.2)
+        this.rewardButton.add(rewardButtonBg)
+        this.rewardButton.add(this.add.text(0, 0, `Cashout: ${ this.encounterModel.moneyReward }$`).setOrigin(0.5))
+
+        this.rewardButton.setSize(rewardButtonBg.getBounds().width, rewardButtonBg.getBounds().height)
+        this.rewardButton.setInteractive()
+
+        this.rewardButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: this.rewardButton,
+                scale: 1.1,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        this.rewardButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: this.rewardButton,
+                scale: 1,
+                ease: 'Power1',
+                duration: 250
+            })
+        })
+
+        this.rewardButton.on('pointerdown', () => {
+            this.onCashoutReward()
+        })
+
+        this.rewardUI.add(rewardBg).setDepth(25)
+        this.rewardUI.add(rewardText)
+        this.rewardUI.add(rewardCardContainer)
+        this.rewardUI.add(this.rewardButton)
+
+        this.rewardUI.visible = false
+        this.canCashout = false
+    }
+
+    showRewardUI() {
+        this.rewardUI.visible = true
+
+        this.tweens.add({
+            targets: this.rewardUI,
+            alpha: { from: 0, to: 1 },
+            y: { from: (this.sys.canvas.height / 2) - 100, to: this.sys.canvas.height / 2 },
+            ease: 'Power2',
+            duration: 250
+        })
+    }
+
     onCombatWon() {
+        this.canCashout = true
+
+        this.showRewardUI()
+    }
+
+    onCashoutReward() {
+        if (!this.canCashout) return;
+
         
     }
 

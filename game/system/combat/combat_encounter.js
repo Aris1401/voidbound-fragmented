@@ -16,6 +16,7 @@ export default class CombatEncounter {
 
     createEnemies() {
         this.encounterModel.generateEncounter();
+        this.encounterModel.generateRewards(this.combatSystem.cardDB)
 
         this.encounterModel.enemies.forEach(enemy => {
             let enemyInstance = this.combatState.createEnemy(enemy)
@@ -24,6 +25,6 @@ export default class CombatEncounter {
     }
 
     startCombat() {
-        this.scene.scene.switch('combat', { combatState: this.combatState, combatSystem: this.combatSystem });
+        this.scene.scene.switch('combat', { combatState: this.combatState, combatSystem: this.combatSystem, encounterModel: this.encounterModel });
     }
 }

@@ -20,6 +20,8 @@ export default class CombatSystem {
 
         this.currentTurnSide = CombatSystem.Side.PLAYERS
 
+        this.cardDB = null
+
         this.events = new Phaser.Events.EventEmitter();
     }
 
