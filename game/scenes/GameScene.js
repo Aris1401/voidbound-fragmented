@@ -32,28 +32,22 @@ export default class GameScene extends Scene {
         super.create()
         manager.create(this)
 
-        // Managing the story
-        var mainDialogDB = new MainDialogDB();
-        var storyState = new StoryState();
-        this.storySystem = new StorySystem(this, storyState, mainDialogDB);
-
         // Main card db
         this.mainCardDB = new MainCardDB()
-        
-        // Creating the game camera
-        this.cameras.main.setBounds(0, 0, 100*32, 100*32) // Assuming the map is 100x100 tiles of 32px each
-        this.cameras.main.startFollow(this.lia.sprite)
-        
+
         // Creating the player stats
         this.playerStats = new PlayerStats();
         this.playerStats.maxHp = 200
         this.playerStats.hp = this.playerStats.maxHp
 
-        // Mockup
-        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
-        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
-        this.playerStats.deck.push(new (this.mainCardDB.get(SlashCard))())
-        this.playerStats.deck.push(new (this.mainCardDB.get(HealCard))())
+        // Managing the story
+        var mainDialogDB = new MainDialogDB(this.playerStats, this.mainCardDB);
+        var storyState = new StoryState();
+        this.storySystem = new StorySystem(this, storyState, mainDialogDB);
+        
+        // Creating the game camera
+        this.cameras.main.setBounds(0, 0, 100*32, 100*32) // Assuming the map is 100x100 tiles of 32px each
+        this.cameras.main.startFollow(this.lia.sprite)
 
         // Creation of the combat system
         this.combatSystem = new CombatSystem();
@@ -85,8 +79,19 @@ export default class GameScene extends Scene {
         npc.setPosition(655, 1025);
         npc.setSize(32, 64);
         npc.create();
-        
         this.npcs.add(npc);
+
+        var npc2 = new BaseNPC(this, 'lia', 'npc_2', this.storySystem);
+        npc2.setPosition(1911, 1161);
+        npc2.setSize(32, 64);
+        npc2.create();
+        this.npcs.add(npc2);
+
+        var elder = new BaseNPC(this, 'lia', 'elder', this.storySystem);
+        elder.setPosition(1511, 2215);
+        elder.setSize(32, 64);
+        elder.create();
+        this.npcs.add(elder);
     }
 
     createEnemies() {

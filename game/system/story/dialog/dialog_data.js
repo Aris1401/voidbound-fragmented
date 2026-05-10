@@ -6,5 +6,6 @@ export default class DialogData {
         this.content = "";
         this.npc_id = "";
         this.requirements = () => true; // Default to always true
+        this.onComplete = () => {}
     }
 }

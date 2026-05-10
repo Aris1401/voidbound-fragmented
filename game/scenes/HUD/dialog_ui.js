@@ -3,7 +3,7 @@ import StorySystem from "../../system/story/story_system";
 
 export default class DialogUI extends Scene {
   static TEXT_PADDING = 50;
-  static DIALOG_VISIBLE_DURATION = 5000; // ms
+  static DIALOG_VISIBLE_DURATION = 10000; // ms
 
   preload() {
     super.preload();
@@ -31,6 +31,7 @@ export default class DialogUI extends Scene {
         if (!dialogData) return;
 
         this.showDialog(dialogData.content);
+        dialogData.onComplete()
       },
     );
 

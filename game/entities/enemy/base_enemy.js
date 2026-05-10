@@ -7,6 +7,8 @@ export default class BaseEnemy extends Entity {
     constructor(scene, name, combatSystem) {
         super(scene, name);
 
+        this.scene = scene
+
         this.playerOverlapped = false;
 
         this.combatSystem = combatSystem;
@@ -25,7 +27,12 @@ export default class BaseEnemy extends Entity {
         })
 
         this.combatSystem.events.once(CombatSystem.Events.COMBAT_ENDED, () => {
-            this.playerOverlapped = false;
+            this.scene.time.addEvent({
+                delay: 10000,
+                callback: () => {
+                    this.playerOverlapped = false;
+                }
+            })
         })
         
         combatEncounter.startCombat()
