@@ -17,7 +17,7 @@ export default class MainMenuScene extends Scene {
         let title = this.add.text(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'Voidbound: Fragmented', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5)
 
         // Start indicator for the game scene
-        this.add.text(title.x, title.y + 100, 'Cliquez n\'importe quelle touche pour jouer...', { fontSize: '24px', fill: '#0f0' }).setOrigin(0.5)
+        this.add.text(title.x, title.y + 100, 'Press on any key to start...', { fontSize: '24px', fill: '#0f0' }).setOrigin(0.5)
     }
 
     update() {
