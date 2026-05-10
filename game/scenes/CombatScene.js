@@ -71,11 +71,14 @@ export default class CombatScene extends Scene {
         this.playerContainer.add(this.add.sprite(0, 0, 'lia', 0))
 
         // Creating the player health bar
+        let barWidth = (this.combatSystem.playerStats.hp * 100) / this.combatSystem.playerStats.maxHp
         this.playerHealthBar = this.add.rectangle(0, 64, 100, 10, 0xff0000)
         this.playerHealthBarBg = this.add.rectangle(this.playerHealthBar.x, this.playerHealthBar.y, 100, 10, 0xffffff)
 
         this.playerContainer.add(this.playerHealthBarBg)
         this.playerContainer.add(this.playerHealthBar)
+
+        this.playerHealthBar.width = barWidth
 
         this.combatSystem.playerStats.statsEventEmitter.on(EntityStats.Events.HEALTH_CHANGED, (data) => {
             this.tweens.add({

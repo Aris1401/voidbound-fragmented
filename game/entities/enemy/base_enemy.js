@@ -1,5 +1,6 @@
 import BaseSlimeEncounterModel from "../../data/combat/encounter/base_slime_encounter_model";
 import CombatEncounter from "../../system/combat/combat_encounter";
+import CombatSystem from "../../system/combat/combat_system";
 import Entity from "../entity";
 
 export default class BaseEnemy extends Entity {
@@ -17,9 +18,11 @@ export default class BaseEnemy extends Entity {
 
         this.playerOverlapped = true;
 
-        // Creating the combat encounter
         let combatEncounter = new CombatEncounter(this.scene, 3, this.encounterModel, this.combatSystem)
-        this.destroy()
+        
+        this.combatSystem.events.once(CombatSystem.Events.COMBAT_WON, () => {
+            this.destroy()
+        })
         
         combatEncounter.startCombat()
     }

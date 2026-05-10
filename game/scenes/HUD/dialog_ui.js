@@ -18,6 +18,7 @@ export default class DialogUI extends Scene {
     this.dialogVisible = false;
 
     this.dialogTextAnimationPromise = null;
+    this.dialogTextAnimationTimer = null;
     this.dialogTimer = null;
   }
 
@@ -68,6 +69,12 @@ export default class DialogUI extends Scene {
   }
 
   showDialog(text) {
+    // Cancel previous text animation if still running
+    if (this.dialogTextAnimationTimer) {
+      this.dialogTextAnimationTimer.destroy();
+      this.dialogTextAnimationTimer = null;
+    }
+
     this.dialogText.setText(text);
     this.dialogContainer.setVisible(true);
 
@@ -106,6 +113,12 @@ export default class DialogUI extends Scene {
   }
 
   hideDialog(skipAnimation = false) {
+    // Cancel text animation if still running
+    if (this.dialogTextAnimationTimer) {
+      this.dialogTextAnimationTimer.destroy();
+      this.dialogTextAnimationTimer = null;
+    }
+
 	if (skipAnimation) {
 		this.dialogContainer.setVisible(false);
         this.dialogVisible = false;
@@ -169,6 +182,9 @@ export default class DialogUI extends Scene {
           target.text = visibleText + invisibleText;
         },
       });
+
+      // Store timer reference so it can be canceled
+      this.dialogTextAnimationTimer = timer;
     });
   }
 }
